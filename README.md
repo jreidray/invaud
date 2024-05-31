@@ -4,11 +4,11 @@ Inventory Auditing app by Jeremy Ray
 
 ## Web app
 
-The app is generated and served by Express on Node.js.
+TBD
 
 ## Database
 
-Running SQLite, holds the inventoried items and their attributes. Queries can reveal issues and anomalies (items not found or found too many times, rooms missing things or with extra things, etc).
+Running SQLite via Python, holds the inventoried items and their attributes. Queries can reveal issues and anomalies (items not found or found too many times, rooms missing things or with extra things, etc).
 
 ### 'Items' table
 
