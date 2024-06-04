@@ -1,6 +1,7 @@
 import sqlite3
 import os.path
 import csv
+import datetime
 
 # NOTE: uppercase DB denotes database connection object
 # whereas lowercase db indicates database cursor object
@@ -11,7 +12,6 @@ table = ''' CREATE TABLE items(
                 room        TEXT    NOT NULL,
                 person      TEXT    NOT NULL,
                 description TEXT    NOT NULL,
-                notes       TEXT    NOT NULL,
                 accounted   INT     NOT NULL,
                 datetime    TEXT    NOT NULL,
                 roomfound   TEXT    NOT NULL);'''
@@ -29,35 +29,49 @@ def init():
 
 # takes csv input into db
 # assumes 4 column csv into db with 0 or '' for rest
-def ingest(db):
+def ingest(DB, db):
     with open(input("Provide a filename (CSV): "), mode='r') as file:
         inFile = csv.reader(file)
         for lines in inFile:
-            db.execute(f"INSERT INTO ITEMS VALUES ({lines[0]},{lines[1]},{lines[2]},{lines[3]},'',0,'','');")
+            db.execute(f"INSERT INTO ITEMS VALUES ({lines[0]},{lines[1]},{lines[2]},{lines[3]},0,'','');")
+        DB.commit()
             
 # finds items that have not been found yet (accounted == 0)
 def notFound(db):
-    db.execute("SELECT * FROM items WHERE accounted=0;")
+    db.execute("SELECT barcode, room, person, description FROM items WHERE accounted=0;")
     return db.fetchall()
 
 # finds items that have been found more than once (accounted > 1)
 def overFound(db):
-    db.execute("SELECT * FROM items WHERE accounted>1;")
+    db.execute("SELECT barcode, room, roomfound, datetime FROM items WHERE accounted>1;")
     return db.fetchall()
 
 # finds rooms that haven't been fully scanned
 def underRoom(db):
-    db.execute("SELECT * FROM items;")
-    all = db.fetchall()
+    db.execute("SELECT room, accounted, datetime, FROM items;")
+    items = db.fetchall()
     rooms = {}
-    # checks each item in table, if not accounted for, then increments the room's value in rooms dictionary
-    for item in all:
-        if item[5]==0 or item[5]=='None':
-            try:
-                rooms[item[1]] += 1
-            except:
-                rooms[item[1]] = 1
-    return rooms
+    roomList = []
+
+    # creates a dictionary with each room's stats    
+    # {"ROOM": [Count, Found, Date]}
+    for item in items:
+        # if room hasn't been seen yet, set it up
+        if item[0] not in rooms:
+            rooms[item[0]] = [1, item[1], item[2]]
+        # if room has been seen yet, increment
+        else:
+            # take the newest datetime
+            if rooms[item[0]] > item[2]: dt = rooms[item[0]]
+            else: dt = item[2]
+            rooms[item[0]] = [rooms[item[0]]+1, rooms[item[1]]+item[1], dt]
+
+    # makes a list instead of a dict
+    # [Room, Count, Found, Date]
+    for k, v in rooms.items():
+        roomList.append([k, v[0], v[1], v[2]])
+
+    return roomList
 
 # finds things in incorrect locations 
 def wrongSpot(db):
