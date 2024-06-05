@@ -1,0 +1,10 @@
+{% extends "base.html" %} {% block title %}ingest{% endblock %} {% block content %}
+    <div>
+        <h2>Upload your inventory as a .csv file without headers </h2>
+        <p>Columns: Barcode, Room, Person, Description</p>
+        <form action = "/ingestSuccess/" method = "post" enctype="multipart/form-data">   
+            <input type="file" name="file" />   
+            <input type = "submit" value="Upload">   
+        </form>   
+    </div>
+{% endblock %}

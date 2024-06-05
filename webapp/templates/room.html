@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block title %}room{% endblock %} {% block content %}
+    <div>
+        <h2>Input item barcodes:</h2>
+        <form method="POST" action="/room/{{ room }}/">
+            <input type="text" name="textInput">
+            <input type="submit" style="display: none">
+        </form>
+
+        <h2>Todo:</h2>
+        <table>
+            <tr>
+                <th>Barcode</th>
+                <th>Person</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+            {% for item in items %}
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+            {% endfor %}
+            </tr>
+        </table>
+
+        <h2>Completed:</h2>
+        <table>
+            <tr>
+                <th>Barcode</th>
+                <th>Person</th>
+                <th>Description</th>
+                <th>Accounted</th>
+                <th>When Found</th>
+                <th>Where Found</th>
+            </tr>
+            <tr>
+            {% for item in items %}
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>{{ item[4] }}</td>
+                <td>{{ item[5] }}</td>
+                <td>{{ item[6]] }}</td>
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% endblock %}
