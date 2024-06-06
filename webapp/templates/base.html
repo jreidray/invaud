@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <style>
+        .sidenav {
+            height: 100%;
+            width: 180px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #5D1725;
+            overflow-x: hidden;
+            padding-top: 20px;
+            color: white;
+            text-align: center;
+            
+        }
+        .container {
+            margin-left: 180px; /* Same as the width of the sidenav */
+        }
+    </style>
+
+    <title>{% block title %}Home{% endblock %}</title>
+  </head>
+  <body>
+    <div id="leftNav" class="sidenav">
+        <h3>Invaud</h3>
+        <p>By Jeremy Ray
+
+        </p>
+        <ul style="margin-left: 5px; text-align: left;">
+            <li><a href="/">Homepage</a></li>
+            <li><a href="/ingest/">Ingest data</a></li>
+            <li><a href="/room/">Room Audit</a></li>
+            <li><a href="/item/">Item Info</a></li>
+            <li><a href="/reports/">Reports</a></li>
+            <li><a href="/reports/extras/">&nbsp;&nbsp;&nbsp;&nbsp;Duplicate items</a></li>
+            <li><a href="/reports/incomplete/">&nbsp;&nbsp;&nbsp;&nbsp;Incomplete rooms</a></li>
+            <li><a href="/reports/misplaced/">&nbsp;&nbsp;&nbsp;&nbsp;Missing items</a></li>
+            <li><a href="/reports/missing/">&nbsp;&nbsp;&nbsp;&nbsp;Misplaced items</a></li>
+        </ul>
+    </div>
+    <div class="container">{% block content %} {% endblock %}</div>
+  
+  </body>

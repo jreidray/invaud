@@ -1,15 +1,15 @@
 import flask
-import database
+from . import database
 
 views = flask.Blueprint('views', __name__)
 
 #region /
 @views.route("/")
-def homePage():
+def homeView():
     return "<h1>Homepage</h1>"
 
 @views.route("/ingest/")
-def ingest():
+def ingestView():
     return flask.render_template("ingest.html")
 
 @views.route("/ingestSuccess/", methods=["POST"])
@@ -45,14 +45,14 @@ def extrasView():
     return flask.render_template('extra.html', items=items)
 
 @views.route("/reports/incomplete/")
-def missingView():
+def incompleteView():
     DB, db = database.init()
     items = database.underRoom(db)
     DB.close()
     return flask.render_template('incomplete.html', items=items)
 
 @views.route("/reports/misplaced/")
-def missingView():
+def misplacedView():
     DB, db = database.init()
     items = database.wrongSpot(db)
     DB.close()

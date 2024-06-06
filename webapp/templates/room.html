@@ -1,11 +1,13 @@
 {% extends "base.html" %} {% block title %}room{% endblock %} {% block content %}
-    <div>
+    <div class="form">
         <h2>Input item barcodes:</h2>
         <form method="POST" action="/room/{{ room }}/">
             <input type="text" name="textInput">
             <input type="submit" style="display: none">
         </form>
+    </div>
 
+    <div class="todo">
         <h2>Todo:</h2>
         <table>
             <tr>
@@ -21,7 +23,9 @@
             {% endfor %}
             </tr>
         </table>
-
+    </div>
+    
+    <div class="tpdone">
         <h2>Completed:</h2>
         <table>
             <tr>
