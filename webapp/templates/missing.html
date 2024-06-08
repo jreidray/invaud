@@ -1,20 +1,20 @@
 {% extends "base.html" %} {% block title %}missing{% endblock %} {% block content %}
     <h1>Items that have not been found:</h1>
-    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
-    <table class="sorttable">
-        <tr>
+    <table class="table table-striped">
+        <thead><tr>
             <th>Barcode</th>
             <th>Room</th>
             <th>Person</th>
             <th>Description</th>
-        </tr>
-        <tr>>
-        {% for item in items %}
+        </tr></thead>
+        <tbody>{% for item in items %}
+        <tr>
             <td>{{ item[0] }}</td>
             <td>{{ item[1] }}</td>
             <td>{{ item[2] }}</td>
             <td>{{ item[3] }}</td>
-        {% endfor %}
         </tr>
+        {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

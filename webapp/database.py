@@ -1,5 +1,6 @@
 import sqlite3
 import os.path
+from os import remove
 import csv
 import datetime
 
@@ -26,6 +27,7 @@ def init():
     # otherwise, just connect
     else:
         DB = sqlite3.connect('inventory.db')
+    DB.commit()
     return DB, DB.cursor()
 
 # CLI csv to db
@@ -34,20 +36,32 @@ def manualIngest(DB, db):
     with open(input("Provide a filename (CSV): "), mode='r') as file:
         inFile = csv.reader(file)
         for lines in inFile:
-            db.execute(f"INSERT INTO ITEMS VALUES ({lines[0]},{lines[1]},{lines[2]},{lines[3]},0,'','');")
+            print(lines[0])
+            db.execute(f"INSERT INTO ITEMS VALUES ('{lines[0]}','{lines[1]}','{lines[2]}','{lines[3]}',0,'','');")
         DB.commit()
 
 # webapp csv upload to db ingest
 # returns number of items added
+# 'file' is in binary mode, tempFile saves as text
 def ingest(file):
+    tempFile = open("temp.csv", "w")
+    tempFile.write(file.read().decode("utf-8"))
+    tempFile.close()
+    tempFile = open("temp.csv", "r")
     DB, db = init()
-    count = -1 * int(db.execute("SELECT COUNT(*) FROM items"))
-    inFile = csv.reader(file)
+    db.execute("SELECT COUNT(*) FROM items")
+    count = -1 * int(db.fetchone()[0]) #fetchone returns a tuple
+    inFile = csv.reader(tempFile)
     for lines in inFile:
-        db.execute(f"INSERT INTO ITEMS VALUES ({lines[0]},{lines[1]},{lines[2]},{lines[3]},0,'','');")
-    count += int(db.execute("SELECT COUNT(*) FROM items"))
+        try: print(lines[0]) #skips newlines
+        except: continue
+        db.execute(f"INSERT INTO ITEMS VALUES ('{lines[0]}','{lines[1]}','{lines[2]}','{lines[3]}',0,'','');")
+    db.execute("SELECT COUNT(*) FROM items")
+    count += int(db.fetchone()[0])
     DB.commit()
     DB.close()
+    tempFile.close()
+    remove("temp.csv")
     return count
 
 # WARNING! This resets all non persistent values
@@ -58,10 +72,11 @@ def resetAudit(db):
 #region roomview
 # queries what has and hasn't been found in a certain room
 def roomAudit(db, room):
-    db.execute(f"SELECT barcode, person, description FROM items WHERE room={room} AND accounted=0;")
+    db.execute(f"SELECT barcode, person, description FROM items WHERE room='{room}' AND accounted=0;")
     todo = db.fetchall()
-    db.execute("SELECT * FROM items WHERE room={room} AND accounted>0")
+    db.execute(f"SELECT * FROM items WHERE room='{room}' AND accounted>0")
     todone = db.fetchall()
+    todone.append(db.execute(f"SELECT * FROM items WHERE room!='{room}' AND roomfound='{room}'"))
     return todo, todone
 #endregion
   
@@ -78,7 +93,7 @@ def overFound(db):
 
 # finds rooms that haven't been fully scanned
 def underRoom(db):
-    db.execute("SELECT room, accounted, datetime, FROM items;")
+    db.execute("SELECT room, accounted, datetime FROM items;")
     items = db.fetchall()
     rooms = {}
     roomList = []
@@ -103,7 +118,7 @@ def underRoom(db):
 
     return roomList
 
-# finds things in incorrect locations 
+# finds things in incorrect locationstes 
 def wrongSpot(db):
     db.execute("SELECT * FROM items WHERE room!=roomFound AND roomFound!='';")
     return db.fetchall()
@@ -112,6 +127,7 @@ def wrongSpot(db):
 # main debugging
 if __name__ == '__main__':
     DB, db = init()
-    #ingest(db)
+    file = open("test.csv", 'rb')
+    manualIngest(DB, db)
     DB.commit()
     DB.close()

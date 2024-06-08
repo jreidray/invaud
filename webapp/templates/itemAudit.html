@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block title %}roomAudit{% endblock %} {% block content %}
+    <div class="form">
+        <h2>Input room found if auditing:</h2>
+        <form method="POST" action="/item/{{ item }}/">
+            <input type="text" name="textInput">
+            <input type="submit" style="display: none">
+        </form>
+    </div>
+
+    <ul>
+        <li>Barcode:  {{ items[0] }}</li>
+        <li>Room:  {{ items[1] }}</li>
+        <li>Person:  {{ items[2] }}</li>
+        <li>Description:  {{ items[3] }}</li>
+        <li>Accounted:  {{ items[4] }}</li>
+        <li>When Found:  {{ items[5] }}</li>
+        <li>Where Found:  {{ items[6] }}</li>
+    </ul>
+{% endblock %}
