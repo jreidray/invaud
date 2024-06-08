@@ -2,9 +2,9 @@
 
 Inventory Auditing app by Jeremy Ray
 
-## Web app
+## Webapp
 
-TBD
+The webserver is setup with Flask on Python. The start.py file is the script that starts the server from the custom module /webapp/. In the webapp module, there is the \_\_init\_\_.py (registers config data), database.py (detailed below), views.py (URL Blueprints), and the /templates/ folder. Templates are HTML files written with Jinja that is rendered by Flask and served to the user. These templates can run Python code inside (IE for loop to generate rows of a table). 
 
 ## Database
 
