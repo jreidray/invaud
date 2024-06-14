@@ -107,9 +107,16 @@ def underRoom(db):
         # if room has been seen yet, increment
         else:
             # take the newest datetime
-            if rooms[item[0]] > item[2]: dt = rooms[item[0]]
-            else: dt = item[2]
-            rooms[item[0]] = [rooms[item[0]]+1, rooms[item[1]]+item[1], dt]
+            try:
+                if datetime.datetime.strptime(rooms[item[0]][2], "%c") > datetime.datetime.strptime(item[2], "%c"):
+                    dt = rooms[item[0]][2]
+                else: 
+                    dt = item[2]
+            except:
+                dt = 'Unknown'
+            finally:
+                rooms[item[0]] = [rooms[item[0]][0]+1, rooms[item[0]][1]+item[1], dt]
+
 
     # makes a list instead of a dict
     # [Room, Count, Found, Date]

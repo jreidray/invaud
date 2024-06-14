@@ -7,7 +7,7 @@ views = flask.Blueprint('views', __name__)
 #region /
 @views.route("/")
 def homeView():
-    return "<h1>Homepage</h1>"
+    return flask.render_template('base.html')
 
 @views.route("/ingest/")
 def ingestView():
@@ -70,6 +70,10 @@ def itemAudit(item):
 #endregion
 
 #region /reports/
+@views.route("/reports/")
+def reportsView():
+    return flask.render_template('reports.html')
+
 @views.route("/reports/extras/")
 def extrasView():
     DB, db = database.init()
