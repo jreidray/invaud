@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %}Homepage{% endblock %} {% block content %}
+
+<div class="chartParent" width="100vw" >
+    <div class="chart" id="itemProgressBox" width="30%">
+        <svg width="100%" height="250" viewBox="0 0 250 250" style="--progress: {{ itemProgress }};  --size: 250px; --half-size: calc(var(--size) / 2); --stroke-width: 20px; --radius: calc((var(--size) - var(--stroke-width)) / 2); --circumference: calc(var(--radius) * pi * 2); --dash: calc((var(--progress) * var(--circumference)) / 100);">
+            <circle class="bg" style="cx: var(--half-size); cy: var(--half-size); r: var(--radius); stroke-width: var(--stroke-width); fill: none; stroke-linecap: round;  stroke: #ddd;""></circle>
+            <circle class="fg" style="cx: var(--half-size); cy: var(--half-size); r: var(--radius); stroke-width: var(--stroke-width); fill: none; stroke-linecap: round; transform: rotate(-90deg); transform-origin: var(--half-size) var(--half-size); stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash)); transition: stroke-dasharray 0.3s linear 0s; stroke: #5D1725;"></circle>
+        </svg>
+        <br>
+        <h3>{{ itemTodone }} / {{ itemTotal }}</h3>
+        <a href="/item"><div class="button">Items</div></a>
+    </div>
+
+    <div class="chart" id="roomProgressBox" width="30%">
+            <svg width="100%" height="250" viewBox="0 0 250 250" style="--progress: {{ roomProgress }};  --size: 250px; --half-size: calc(var(--size) / 2); --stroke-width: 20px; --radius: calc((var(--size) - var(--stroke-width)) / 2); --circumference: calc(var(--radius) * pi * 2); --dash: calc((var(--progress) * var(--circumference)) / 100);">
+                <circle class="bg" style="cx: var(--half-size); cy: var(--half-size); r: var(--radius); stroke-width: var(--stroke-width); fill: none; stroke-linecap: round;  stroke: #ddd;""></circle>
+                <circle class="fg" style="cx: var(--half-size); cy: var(--half-size); r: var(--radius); stroke-width: var(--stroke-width); fill: none; stroke-linecap: round; transform: rotate(-90deg); transform-origin: var(--half-size) var(--half-size); stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash)); transition: stroke-dasharray 0.3s linear 0s; stroke: #5D1725;"></circle>
+                <br>
+                <h3>{{ roomTodone }} / {{ roomTotal }}</h3>
+                <a href="/room"><div class="button">Rooms</div></a>
+            </svg>
+    </div>
+</div>
+<div class="buttonParent" width="100vw">
+    <a href="/reports/extras"><div class="button">Extra</div></a>
+    <a href="/reports/incomplete"><div class="button">Incomplete</div></a>
+    <a href="/reports/misplaced"><div class="button">Misplaced</div></a>
+    <a href="/reports/missing"><div class="button">Missing</div></a>
+</div>
+<h2 style="color:orangered; text-align: center; margin-top: 30px;">Warning: the following options will change or break our current inventory.</h2>
+<div class="buttonParent" width="100vw">
+    <a href="/ingest"><div class="button">Ingest data</div></a>
+    <a href="/reset"><div class="button">Reset audit</div></a>
+
+</div>
+{% endblock %}

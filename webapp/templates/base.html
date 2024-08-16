@@ -9,16 +9,14 @@
       .titlebar {
         background-color: #5D1725; 
         padding: 10px 0; 
-        text-align: center;
+        text-align: left;
         width: 100%;
         box-sizing: border-box;
         vertical-align: middle;
-        display: flex;
-        gap: 16%;
         a {
           text-decoration: none;
           color: white;
-          margin: 15px;
+          margin: 30px;
           vertical-align: middle;
           font-weight: bold;
         }
@@ -26,21 +24,60 @@
           text-decoration: underline;
         }
       }
-        .container {
-            margin: 20px; /* Same as the width of the sidenav */
-        }
+      
+      .button {
+        background-color: #5D1725;
+        border-radius: 15px;
+        width: 100%;
+        text-decoration: none;
+        text-align: center;
+        font-size: 30pt ;
+        color: #ffffff;
+        font-weight: bold;
+      }
+
+      button:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      
+      .buttonParent {
+        margin-top: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+      }
+
+      .buttonParent .button {
+        font-size: 24pt;
+        width: 18vw;
+      }
+
+      .chartParent {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+      }
+
+      .chart {
+        vertical-align: middle;
+        text-align: center;
+        
+      }
+      
+      .container {
+        margin-top: 30px;
+        width: 100vw;
+      }
+
     </style>
 
-    <title>{% block title %}Home{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <div class="titlebar">
-      <a style="margin-left: 25px" href="/ingest/">Ingest</a>
-      <a href="/reports/">Reports</a>
       <h1><a href="/">Invaud</a></h1>
-      <a href="/room/">Room</a>
-      <a style="margin-right: 25px" href="/item/">Item</a>
       </div>
     </div>
     

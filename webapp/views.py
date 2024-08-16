@@ -7,7 +7,11 @@ views = flask.Blueprint('views', __name__)
 #region /
 @views.route("/")
 def homeView():
-    return flask.render_template('base.html')
+    itemTodone = 50
+    itemTotal = 100
+    roomTodone = 3
+    roomTotal = 10
+    return flask.render_template('home.html', itemProgress=divByZero(itemTodone,itemTotal), roomProgress=divByZero(roomTodone,roomTotal), itemTodone=itemTodone, itemTotal=itemTotal, roomTodone=roomTodone, roomTotal=roomTotal)
 
 @views.route("/ingest/")
 def ingestView():
@@ -19,6 +23,23 @@ def ingestSuccess():
         file = flask.request.files['file']
         count = database.ingest(file)
         return flask.render_template("ingestSuccess.html", count=count)
+
+@views.route("/reset/")
+def resetConfirmation():
+    return flask.render_template("reset.html")
+
+@views.route("/auditReset/")
+def auditReset():
+    DB, db = database.init()
+    database.resetAudit(db)
+    return flask.render_template("resetSuccess.html", reset="All audit entries")
+
+@views.route("/dbReset/")
+def dbReset():
+    DB, db = database.init()
+    database.resetDB(db)
+    return flask.render_template("resetSuccess.html", reset="All data entries")
+
 #endregion
 
 #region /room/
@@ -103,3 +124,7 @@ def missingView():
     return flask.render_template('missing.html', items=items)
 #endregion
 
+#returns 0 if divide by zero
+def divByZero(numer,denom):
+    try: return int(numer/denom*100)
+    except: return 0
