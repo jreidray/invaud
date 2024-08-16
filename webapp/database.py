@@ -67,6 +67,10 @@ def ingest(file):
 # WARNING! This resets all non persistent values
 def resetAudit(db):
     db.execute("UPDATE items SET accounted=0, datetime='', roomfound='';")
+
+# WARNING! Removes ALL item entries from database
+def resetDB(db):
+    db.execute("DELETE FROM items;")
 #endregion
 
 #region roomview
