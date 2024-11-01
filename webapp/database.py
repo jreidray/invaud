@@ -30,6 +30,32 @@ def init():
     DB.commit()
     return DB, DB.cursor()
 
+# queries values for homescreen
+# itemTodone, itemTotal, roomTodone, roomTotal
+def homeScreen(db):
+    progress = []
+    db.execute("SELECT COUNT(barcode) FROM items WHERE accounted != 0;")
+    progress.append(int(db.fetchone()[0])) # fetch returns a tuple
+    db.execute("SELECT COUNT(barcode) FROM items ;")
+    progress.append(int(db.fetchone()[0]))
+    ## room count
+    data = db.execute("SELECT barcode, room, accounted FROM items;")
+    complete, total = 0, 0
+    rooms = {} # {room: [accounted, total]}
+    for item in data:
+        if item[1] not in rooms:
+            rooms[item[1]] = [item[2],1]
+        else:
+            rooms[item[1]][0] += item[2]
+            rooms[item[1]][1] += 1
+    for room in rooms:
+        total += 1
+        if rooms[room][0] >= rooms[room][1]: complete += 1
+    progress.extend([complete,total])
+    ##
+    return progress
+
+
 # CLI csv to db
 # assumes 4 column csv into db with 0 or '' for rest
 def manualIngest(DB, db):
@@ -66,11 +92,15 @@ def ingest(file):
 
 # WARNING! This resets all non persistent values
 def resetAudit(db):
+    print("PRE")
     db.execute("UPDATE items SET accounted=0, datetime='', roomfound='';")
+    print("POST")
 
 # WARNING! Removes ALL item entries from database
 def resetDB(db):
+    print("PRE")
     db.execute("DELETE FROM items;")
+    print("POST")
 #endregion
 
 #region roomview
@@ -97,36 +127,19 @@ def overFound(db):
 
 # finds rooms that haven't been fully scanned
 def underRoom(db):
-    db.execute("SELECT room, accounted, datetime FROM items;")
-    items = db.fetchall()
-    rooms = {}
-    roomList = []
-
-    # creates a dictionary with each room's stats    
-    # {"ROOM": [Count, Found, Date]}
-    for item in items:
-        # if room hasn't been seen yet, set it up
-        if item[0] not in rooms:
-            rooms[item[0]] = [1, item[1], item[2]]
-        # if room has been seen yet, increment
+    data = db.execute("SELECT barcode, room, accounted, datetime FROM items;")
+    rooms = {} # {room: [accounted, total, last_dateTime]}
+    roomList = [] # [Room, total, accounted, dateTime]
+    for item in data:
+        if item[1] not in rooms:
+            rooms[item[1]] = [item[2],1,0]
         else:
-            # take the newest datetime
-            try:
-                if datetime.datetime.strptime(rooms[item[0]][2], "%c") > datetime.datetime.strptime(item[2], "%c"):
-                    dt = rooms[item[0]][2]
-                else: 
-                    dt = item[2]
-            except:
-                dt = 'Unknown'
-            finally:
-                rooms[item[0]] = [rooms[item[0]][0]+1, rooms[item[0]][1]+item[1], dt]
-
-
-    # makes a list instead of a dict
-    # [Room, Count, Found, Date]
+            rooms[item[1]][0] += item[2]
+            rooms[item[1]][1] += 1
+            rooms[item[1]][2] = item[3]
     for k, v in rooms.items():
-        roomList.append([k, v[0], v[1], v[2]])
-
+        roomList.append([k, v[1], v[0], v[2]])
+    
     return roomList
 
 # finds things in incorrect locationstes 

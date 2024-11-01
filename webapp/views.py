@@ -7,10 +7,9 @@ views = flask.Blueprint('views', __name__)
 #region /
 @views.route("/")
 def homeView():
-    itemTodone = 50
-    itemTotal = 100
-    roomTodone = 3
-    roomTotal = 10
+    DB, db = database.init()
+    [itemTodone, itemTotal, roomTodone, roomTotal] = database.homeScreen(db)
+    DB.close()
     return flask.render_template('home.html', itemProgress=divByZero(itemTodone,itemTotal), roomProgress=divByZero(roomTodone,roomTotal), itemTodone=itemTodone, itemTotal=itemTotal, roomTodone=roomTodone, roomTotal=roomTotal)
 
 @views.route("/ingest/")
@@ -32,12 +31,16 @@ def resetConfirmation():
 def auditReset():
     DB, db = database.init()
     database.resetAudit(db)
+    DB.commit()
+    DB.close()
     return flask.render_template("resetSuccess.html", reset="All audit entries")
 
 @views.route("/dbReset/")
 def dbReset():
     DB, db = database.init()
     database.resetDB(db)
+    DB.commit()
+    DB.close()
     return flask.render_template("resetSuccess.html", reset="All data entries")
 
 #endregion
