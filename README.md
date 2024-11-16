@@ -4,11 +4,11 @@ Inventory Auditing app by Jeremy Ray
 
 ## Webapp
 
-The webserver is setup with Flask on Python. The start.py file is the script that starts the server from the custom module /webapp/. In the webapp module, there is the \_\_init\_\_.py (registers config data), database.py (detailed below), views.py (URL Blueprints), and the /templates/ folder. Templates are HTML files written with Jinja that is rendered by Flask and served to the user. These templates can run Python code inside (IE for loop to generate rows of a table). 
+The webserver can either be run in Flask's development server with the start.py script, or HTTPS encrypted with Apache via the invaud.conf site pointing to the invaud.wsgi interface. Both interface with the /webapp/ module that initializes the Flask app, the SQLite3 database, and the Jinja blueprints. Jinja, built into Flask, renders the HTML in /templates which contain Python code themselves.
 
 ## Database
 
-Running SQLite via Python, holds the inventoried items and their attributes. Queries can reveal issues and anomalies (items not found or found too many times, rooms missing things or with extra things, etc).
+Running SQLite via Python, holds the inventoried items and their attributes. Queries can reveal issues and anomalies (items not found or found too many times, rooms missing things or with extra things, etc). Other more complex data is extrapolated in Python for when queries would not suffice.
 
 ### 'Items' table
 

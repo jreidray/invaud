@@ -20,13 +20,13 @@ table = ''' CREATE TABLE items(
 #region setup
 # opens or creates db
 def init():
-    # if db does not exist...
-    if(os.path.isfile('inventory.db') == 0):
-        DB = sqlite3.connect('inventory.db')
-        DB.execute(table)
-    # otherwise, just connect
+    # if DB exists..
+    if(os.path.isfile('/var/www/invaud/inventory.db')):
+        DB = sqlite3.connect('/var/www/invaud/inventory.db')
+    # otherwise, create it
     else:
-        DB = sqlite3.connect('inventory.db')
+        DB = sqlite3.connect('/var/www/invaud/inventory.db')
+        DB.execute(table)
     DB.commit()
     return DB, DB.cursor()
 
@@ -70,10 +70,10 @@ def manualIngest(DB, db):
 # returns number of items added
 # 'file' is in binary mode, tempFile saves as text
 def ingest(file):
-    tempFile = open("temp.csv", "w")
+    tempFile = open("/var/www/invaud/temp.csv", "w")
     tempFile.write(file.read().decode("utf-8"))
     tempFile.close()
-    tempFile = open("temp.csv", "r")
+    tempFile = open("/var/www/invaud/temp.csv", "r")
     DB, db = init()
     db.execute("SELECT COUNT(*) FROM items")
     count = -1 * int(db.fetchone()[0]) #fetchone returns a tuple
@@ -87,7 +87,7 @@ def ingest(file):
     DB.commit()
     DB.close()
     tempFile.close()
-    remove("temp.csv")
+    remove("/var/www/invaud/temp.csv")
     return count
 
 # WARNING! This resets all non persistent values
