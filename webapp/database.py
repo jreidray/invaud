@@ -7,7 +7,10 @@ import datetime
 # NOTE: uppercase DB denotes database connection object
 # whereas lowercase db indicates database cursor object
 
-# modifiable columns
+# NOTE: change root directory env var!
+env_rootDir = '/var/www/invaud/'
+
+# columns for SQLite items table
 table = ''' CREATE TABLE items(
                 barcode     TEXT    NOT NULL,
                 room        TEXT    NOT NULL,
@@ -17,23 +20,22 @@ table = ''' CREATE TABLE items(
                 datetime    TEXT    NOT NULL,
                 roomfound   TEXT    NOT NULL);'''
 
-#region setup
-# opens or creates db
+# open & returns database and cursor object
+# creates the database if not found
 def init():
     # if DB exists..
-    if(os.path.isfile('/var/www/invaud/inventory.db')):
-        DB = sqlite3.connect('/var/www/invaud/inventory.db')
+    if(os.path.isfile(f'{env_rootDir}inventory.db')):
+        DB = sqlite3.connect(f'{env_rootDir}inventory.db')
     # otherwise, create it
     else:
-        DB = sqlite3.connect('/var/www/invaud/inventory.db')
+        DB = sqlite3.connect(f'{env_rootDir}inventory.db')
         DB.execute(table)
     DB.commit()
     return DB, DB.cursor()
 
 # queries values for homescreen
-# itemTodone, itemTotal, roomTodone, roomTotal
 def homeScreen(db):
-    progress = []
+    progress = [] # [itemTodone, itemTotal, roomTodone, roomTotal]
     db.execute("SELECT COUNT(barcode) FROM items WHERE accounted != 0;")
     progress.append(int(db.fetchone()[0])) # fetch returns a tuple
     db.execute("SELECT COUNT(barcode) FROM items ;")
@@ -52,7 +54,6 @@ def homeScreen(db):
         total += 1
         if rooms[room][0] >= rooms[room][1]: complete += 1
     progress.extend([complete,total])
-    ##
     return progress
 
 
@@ -70,10 +71,10 @@ def manualIngest(DB, db):
 # returns number of items added
 # 'file' is in binary mode, tempFile saves as text
 def ingest(file):
-    tempFile = open("/var/www/invaud/temp.csv", "w")
+    tempFile = open(f"{env_rootDir}temp.csv", "w")
     tempFile.write(file.read().decode("utf-8"))
     tempFile.close()
-    tempFile = open("/var/www/invaud/temp.csv", "r")
+    tempFile = open(f"{env_rootDir}temp.csv", "r")
     DB, db = init()
     db.execute("SELECT COUNT(*) FROM items")
     count = -1 * int(db.fetchone()[0]) #fetchone returns a tuple
@@ -87,7 +88,7 @@ def ingest(file):
     DB.commit()
     DB.close()
     tempFile.close()
-    remove("/var/www/invaud/temp.csv")
+    remove(f"{env_rootDir}temp.csv")
     return count
 
 # WARNING! This resets all non persistent values
@@ -101,9 +102,7 @@ def resetDB(db):
     print("PRE")
     db.execute("DELETE FROM items;")
     print("POST")
-#endregion
 
-#region roomview
 # queries what has and hasn't been found in a certain room
 def roomAudit(db, room):
     db.execute(f"SELECT barcode, person, description FROM items WHERE room='{room}' AND accounted=0;")
@@ -112,9 +111,7 @@ def roomAudit(db, room):
     todone = db.fetchall()
     todone.append(db.execute(f"SELECT * FROM items WHERE room!='{room}' AND roomfound='{room}'"))
     return todo, todone
-#endregion
   
-#region reports         
 # finds items that have not been found yet (accounted == 0)
 def notFound(db):
     db.execute("SELECT barcode, room, person, description FROM items WHERE accounted=0;")
@@ -122,7 +119,7 @@ def notFound(db):
 
 # finds items that have been found more than once (accounted > 1)
 def overFound(db):
-    db.execute("SELECT barcode, room, roomfound, datetime FROM items WHERE accounted>1;")
+    db.execute("SELECT barcode, accounted, room, roomfound, datetime FROM items WHERE accounted>1;")
     return db.fetchall()
 
 # finds rooms that haven't been fully scanned
@@ -132,26 +129,18 @@ def underRoom(db):
     roomList = [] # [Room, total, accounted, dateTime]
     for item in data:
         if item[1] not in rooms:
-            rooms[item[1]] = [item[2],1,0]
+            rooms[item[1]] = [item[2],1,'']
         else:
             rooms[item[1]][0] += item[2]
             rooms[item[1]][1] += 1
             rooms[item[1]][2] = item[3]
     for k, v in rooms.items():
-        roomList.append([k, v[1], v[0], v[2]])
+        if v[0] != v[1]:
+            roomList.append([k, v[1], v[0], v[2]])
     
     return roomList
 
-# finds things in incorrect locationstes 
+# finds things in incorrect locations 
 def wrongSpot(db):
     db.execute("SELECT * FROM items WHERE room!=roomFound AND roomFound!='';")
     return db.fetchall()
-#endregion
-
-# main debugging
-if __name__ == '__main__':
-    DB, db = init()
-    file = open("test.csv", 'rb')
-    manualIngest(DB, db)
-    DB.commit()
-    DB.close()

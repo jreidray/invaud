@@ -1,6 +1,7 @@
 # invaud
 
-Inventory Auditing app by Jeremy Ray
+Inventory Auditing app by Jeremy Ray for Mississippi State University's Social Science Research Center
+Change environment variables located in /webapp module, such as encryption key and user account info, and in WSGI config.
 
 ## Webapp
 

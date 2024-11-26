@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %}extra{% endblock %} {% block content %}
+    <h1> Authenticate with username and password:</h1>
+
+    <form action="/auth/login/" method="POST">
+        <input placeholder="username" autocomplete="username" type="text" name="username">
+        <input placeholder="password" autocomplete="password" type="password" name="password">
+        <input type="submit" name="login">
+     </form>
+{% endblock %}
