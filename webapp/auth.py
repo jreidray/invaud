@@ -1,8 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, session, url_for
-
-# NOTE: change these env vars!
-env_username = 'defaultUser'
-env_password = 'defaultPassword'
+from flask import Blueprint, current_app, redirect, render_template, request, session, url_for
 
 auth = Blueprint('auth', __name__)
 
@@ -11,7 +7,7 @@ auth = Blueprint('auth', __name__)
 # return render_template("template.html") if authorized() else redirect(url_for('auth.login'))
 # if logged in, go where you expect; else, redirect to login page
 def authorized():
-    try: return ((session["username"] == env_username) and (session["password"] == env_password))
+    try: return ((session["username"] == current_app.config['username']) and (session["password"] == current_app.config['password']))
     except: return False
 
 # redirect to login

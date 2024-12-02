@@ -1,14 +1,11 @@
 import sqlite3
-import os.path
+from os.path import isfile
 from os import remove
-import csv
-import datetime
+from csv import reader as parseCSV
+from flask import current_app
 
 # NOTE: uppercase DB denotes database connection object
 # whereas lowercase db indicates database cursor object
-
-# NOTE: change root directory env var!
-env_rootDir = '/var/www/invaud/'
 
 # columns for SQLite items table
 table = ''' CREATE TABLE items(
@@ -24,11 +21,11 @@ table = ''' CREATE TABLE items(
 # creates the database if not found
 def init():
     # if DB exists..
-    if(os.path.isfile(f'{env_rootDir}inventory.db')):
-        DB = sqlite3.connect(f'{env_rootDir}inventory.db')
+    if(isfile(f'{current_app.config["rootDir"]}inventory.db')):
+        DB = sqlite3.connect(f'{current_app.config["rootDir"]}inventory.db')
     # otherwise, create it
     else:
-        DB = sqlite3.connect(f'{env_rootDir}inventory.db')
+        DB = sqlite3.connect(f'{current_app.config["rootDir"]}inventory.db')
         DB.execute(table)
     DB.commit()
     return DB, DB.cursor()
@@ -61,7 +58,7 @@ def homeScreen(db):
 # assumes 4 column csv into db with 0 or '' for rest
 def manualIngest(DB, db):
     with open(input("Provide a filename (CSV): "), mode='r') as file:
-        inFile = csv.reader(file)
+        inFile = parseCSV(file)
         for lines in inFile:
             print(lines[0])
             db.execute(f"INSERT INTO ITEMS VALUES ('{lines[0]}','{lines[1]}','{lines[2]}','{lines[3]}',0,'','');")
@@ -71,14 +68,14 @@ def manualIngest(DB, db):
 # returns number of items added
 # 'file' is in binary mode, tempFile saves as text
 def ingest(file):
-    tempFile = open(f"{env_rootDir}temp.csv", "w")
+    tempFile = open(f"{current_app.config['rootDir']}temp.csv", "w")
     tempFile.write(file.read().decode("utf-8"))
     tempFile.close()
-    tempFile = open(f"{env_rootDir}temp.csv", "r")
+    tempFile = open(f"{current_app.config['rootDir']}temp.csv", "r")
     DB, db = init()
     db.execute("SELECT COUNT(*) FROM items")
     count = -1 * int(db.fetchone()[0]) #fetchone returns a tuple
-    inFile = csv.reader(tempFile)
+    inFile = parseCSV(tempFile)
     for lines in inFile:
         try: print(lines[0]) #skips newlines
         except: continue
@@ -88,7 +85,7 @@ def ingest(file):
     DB.commit()
     DB.close()
     tempFile.close()
-    remove(f"{env_rootDir}temp.csv")
+    remove(f"{current_app.config['rootDir']}temp.csv")
     return count
 
 # WARNING! This resets all non persistent values
