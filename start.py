@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = startServer(
-    rootDir = getenv('ROOTDIR'),
+    rootDir = getenv('ROOT_DIR'),
+    dataDir = getenv('DATA_DIR'),
     SECRET_KEY = getenv('SECRET_KEY'),
     username = getenv('USERNAME'),
     password = getenv('PASSWORD')

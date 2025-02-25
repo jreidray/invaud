@@ -20,15 +20,13 @@ table = ''' CREATE TABLE items(
 # open & returns database and cursor object
 # creates the database if not found
 def init():
-    # if DB exists..
-    if(isfile(f'{current_app.config["rootDir"]}inventory.db')):
-        DB = sqlite3.connect(f'{current_app.config["rootDir"]}inventory.db')
-    # otherwise, create it
-    else:
-        DB = sqlite3.connect(f'{current_app.config["rootDir"]}inventory.db')
-        DB.execute(table)
+    DB = sqlite3.connect(f'{current_app.config["dataDir"]}/inventory.db')
+    cursor = DB.cursor()
+    cursor.execute("PRAGMA table_info(items);") 
+    # checks if table items exists, and creates it if not
+    if(cursor.fetchall() == []): cursor.execute(table)
     DB.commit()
-    return DB, DB.cursor()
+    return DB, cursor
 
 # queries values for homescreen
 def homeScreen(db):
@@ -68,10 +66,10 @@ def manualIngest(DB, db):
 # returns number of items added
 # 'file' is in binary mode, tempFile saves as text
 def ingest(file):
-    tempFile = open(f"{current_app.config['rootDir']}temp.csv", "w")
+    tempFile = open(f"{current_app.config['dataDir']}/temp.csv", "w")
     tempFile.write(file.read().decode("utf-8"))
     tempFile.close()
-    tempFile = open(f"{current_app.config['rootDir']}temp.csv", "r")
+    tempFile = open(f"{current_app.config['dataDir']}/temp.csv", "r")
     DB, db = init()
     db.execute("SELECT COUNT(*) FROM items")
     count = -1 * int(db.fetchone()[0]) #fetchone returns a tuple
@@ -85,7 +83,7 @@ def ingest(file):
     DB.commit()
     DB.close()
     tempFile.close()
-    remove(f"{current_app.config['rootDir']}temp.csv")
+    remove(f"{current_app.config['dataDir']}/temp.csv")
     return count
 
 # WARNING! This resets all non persistent values

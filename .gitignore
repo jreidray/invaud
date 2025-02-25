@@ -1,5 +1,4 @@
 .gitignore
 webapp/__pycache__/
-secure/
 inventory.db
 test.csv

@@ -1,0 +1,69 @@
+.titlebar {
+    background-color: #5D1725; 
+    padding: 10px 0; 
+    display: flex;  
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    vertical-align: middle;
+    a {
+      text-decoration: none;
+      color: white;
+      margin: 30px;
+      vertical-align: middle;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .button {
+    background-color: #5D1725;
+    border-radius: 15px;
+    width: 100%;
+    text-decoration: none;
+    text-align: center;
+    font-size: 30pt ;
+    color: #ffffff;
+    font-weight: bold;
+  }
+
+  button:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .buttonParent {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+
+  .buttonParent .button {
+    font-size: 24pt;
+    width: 18vw;
+  }
+
+  .chartParent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+
+  .chart {
+    vertical-align: middle;
+    text-align: center;
+    
+  }
+  
+  .container {
+    margin-top: 30px;
+    width: 100vw;
+  }
+
+  .highlight {
+    background-color: yellow;
+  }

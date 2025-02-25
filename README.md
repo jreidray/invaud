@@ -1,15 +1,16 @@
 # invaud
 
 Inventory Auditing app by Jeremy Ray for Mississippi State University's Social Science Research Center
-Change environment variables located in /webapp module, such as encryption key and user account info, and in WSGI config.
 
-## Webapp
+This app is built in Flask, a Python web development framework which uses the Jinja HTML template rendering system. Python SQLite3 is used as the database, where the inventory records are stored locally. Password authentication is required to enter the site' from there, you can upload a .csv of your inventory with the given columns. The homepage shows the status of your 'audit', where you visit each room of your department and scan every piece of inventoried equipment. There are also several report views, including items found too many or too few times, and rooms with incomplete audits or extraneous items. After your audit, the counts can be reset without deleting inventory entries. 
 
-The webserver can either be run in Flask's development server with the start.py script, or HTTPS encrypted with Apache via the invaud.conf site pointing to the invaud.wsgi interface. Both interface with the /webapp/ module that initializes the Flask app, the SQLite3 database, and the Jinja blueprints. Jinja, built into Flask, renders the HTML in /templates which contain Python code themselves.
+## Deployment Options
 
-## Database
+Be sure to edit the enviornment variables before building and deploying to set your password. SSL encryption is prefered; cert-bot or Nginx Proxy Manager (NPM) can handle your certificates and renewal.
 
-Running SQLite via Python, holds the inventoried items and their attributes. Queries can reveal issues and anomalies (items not found or found too many times, rooms missing things or with extra things, etc). Other more complex data is extrapolated in Python for when queries would not suffice.
+- Docker. `docker build -t invaud:latest .` from the root directory. Serve behind a reverse proxy like NPM. Mount the `/data` volume to access the inventory.db backup.
+- Apache. Move and enable `invaud.conf` into `/etc/apache2/sites-enabled/` and change the directory to match the `invaud.wsgi` location.
+- Flask. The Flask development server is only meant as means to locally test apps; not recommended. Run `start.py`.
 
 ### 'Items' table
 

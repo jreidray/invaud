@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, redirect, render_template, request, send_from_directory, url_for
 from datetime import datetime
 from . import database
 from .auth import authorized
@@ -12,6 +12,10 @@ def homeView():
     [itemTodone, itemTotal, roomTodone, roomTotal] = database.homeScreen(db)
     DB.close()
     return render_template('home.html', itemProgress=divByZero(itemTodone,itemTotal), roomProgress=divByZero(roomTodone,roomTotal), itemTodone=itemTodone, itemTotal=itemTotal, roomTodone=roomTodone, roomTotal=roomTotal) if authorized() else redirect(url_for('auth.login'))
+
+@views.route("/robots.txt")
+def robotsTxt():
+    return "User-agent: *\nDisallow: /"
 
 # ingests data in CSV format
 @views.route("/ingest/")
